@@ -72,7 +72,13 @@ const CartDrawer = () => {
       return;
     }
 
-    let orderList = cartItems.map(item => `• ${item.name} (x${item.quantity}) - Rs. ${(item.price * item.quantity).toFixed(2)}\n  Photo: ${item.image}`).join('\n\n');
+    let orderList = cartItems.map(item => {
+      const itemTotal = item.price === 'TBD' ? 'Price TBD' : `Rs. ${(item.price * item.quantity).toFixed(2)}`;
+      let line = `• ${item.name} (x${item.quantity}) - ${itemTotal}`;
+      if (item.messageOnCake) line += `\n  Message on Cake: "${item.messageOnCake}"`;
+      line += `\n  Photo: ${item.image}`;
+      return line;
+    }).join('\n\n');
     let total = getCartTotal().toFixed(2);
 
     let message = `*NEW ORDER - SNOW CAKES* 🍰\n\n`;
@@ -174,7 +180,12 @@ const CartDrawer = () => {
                     />
                     <div className="flex-1 flex flex-col justify-between">
                       <div className="flex justify-between items-start">
-                        <h4 className="font-semibold text-primary">{item.name}</h4>
+                        <div className="pr-2">
+                          <h4 className="font-semibold text-primary">{item.name}</h4>
+                          {item.messageOnCake && (
+                            <p className="text-xs text-on-surface-variant italic mt-1 font-medium bg-surface-variant/50 inline-block px-2 py-0.5 rounded">Msg: "{item.messageOnCake}"</p>
+                          )}
+                        </div>
                         <button 
                           onClick={() => removeFromCart(item.id)}
                           className="text-on-surface-variant hover:text-error p-1"
@@ -183,7 +194,9 @@ const CartDrawer = () => {
                         </button>
                       </div>
                       <div className="flex justify-between items-center mt-2">
-                        <span className="font-medium text-on-surface-variant">Rs. {item.price.toFixed(2)}</span>
+                        <span className="font-medium text-on-surface-variant">
+                          {item.price === 'TBD' ? 'Price TBD' : `Rs. ${item.price.toFixed(2)}`}
+                        </span>
                         <div className="flex items-center gap-3 bg-surface rounded-full px-2 py-1 border border-outline-variant/30">
                           <button 
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}

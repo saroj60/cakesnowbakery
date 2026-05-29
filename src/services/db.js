@@ -2,20 +2,24 @@ import { supabase } from '../lib/supabase';
 
 // --- Auth ---
 export const login = async (email, password) => {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-  return { user: data?.user, error: error?.message };
+  const trimmedEmail = email?.trim();
+  const trimmedPassword = password?.trim();
+  if (trimmedEmail === 'cakesnowbakery.com' && trimmedPassword === 'cakesnowbakery@@2026') {
+    localStorage.setItem('admin_session', 'true');
+    return { user: { email: trimmedEmail }, error: null };
+  }
+  return { user: null, error: 'Invalid login credentials' };
 };
 
 export const logout = async () => {
-  await supabase.auth.signOut();
+  localStorage.removeItem('admin_session');
 };
 
 export const getSession = async () => {
-  const { data: { session } } = await supabase.auth.getSession();
-  return session;
+  if (localStorage.getItem('admin_session') === 'true') {
+    return { user: { email: 'cakesnowbakery.com' } };
+  }
+  return null;
 };
 
 // --- Products ---
@@ -29,7 +33,8 @@ export const getProducts = async () => {
   return data.map(p => ({
     ...p,
     image: p.image_url,
-    isActive: p.is_active
+    isActive: p.is_active,
+    isPerLb: p.is_per_lb || false
   }));
 };
 
@@ -41,6 +46,7 @@ export const saveProduct = async (product) => {
     image_url: product.image,
     category: product.category,
     is_active: product.isActive,
+    is_per_lb: product.isPerLb || false
   };
 
   if (product.id) {

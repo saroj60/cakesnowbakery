@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 import Home from './pages/Home';
+import CustomOrder from './pages/CustomOrder';
 import { CartProvider } from './context/CartContext';
 
 import AdminLogin from './pages/admin/AdminLogin';
@@ -33,9 +34,11 @@ function App() {
           {/* Storefront Routes */}
           <Route element={<StorefrontLayout />}>
             <Route path="/" element={<Home />} />
+            <Route path="/custom-order" element={<CustomOrder />} />
           </Route>
 
-          {/* Admin Routes */}
+          {/* Admin & Auth Routes */}
+          <Route path="/login" element={<AdminLogin />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />

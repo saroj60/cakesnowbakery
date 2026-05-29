@@ -16,7 +16,8 @@ const Products = () => {
     description: '',
     image: '',
     category: 'Cakes',
-    isActive: true
+    isActive: true,
+    isPerLb: false
   });
 
   useEffect(() => {
@@ -41,7 +42,8 @@ const Products = () => {
         description: '',
         image: '',
         category: 'Cakes',
-        isActive: true
+        isActive: true,
+        isPerLb: false
       });
     }
     setIsModalOpen(true);
@@ -144,7 +146,9 @@ const Products = () => {
                       </td>
                       <td className="px-4 py-3 font-medium text-on-surface">{product.name}</td>
                       <td className="px-4 py-3 text-sm text-on-surface-variant">{product.category || 'N/A'}</td>
-                      <td className="px-4 py-3 text-sm font-semibold">Rs. {product.price.toFixed(2)}</td>
+                      <td className="px-4 py-3 text-sm font-semibold">
+                        Rs. {product.price.toFixed(2)} {product.isPerLb && <span className="text-xs text-on-surface-variant font-normal">/ lb</span>}
+                      </td>
                       <td className="px-4 py-3 text-sm">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${product.isActive ? 'bg-green-100 text-green-700' : 'bg-surface-dim text-on-surface-variant'}`}>
                           {product.isActive ? 'Active' : 'Draft'}
@@ -203,11 +207,22 @@ const Products = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1 text-on-surface">Price (Rs.) *</label>
-                    <input 
-                      type="number" step="0.01" min="0" required
-                      value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})}
-                      className="w-full px-3 py-2 rounded-lg border border-outline-variant bg-surface focus:ring-2 focus:ring-primary outline-none"
-                    />
+                    <div className="flex items-center gap-4">
+                      <input 
+                        type="number" step="0.01" min="0" required
+                        value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})}
+                        className="w-full px-3 py-2 rounded-lg border border-outline-variant bg-surface focus:ring-2 focus:ring-primary outline-none"
+                      />
+                      <label className="flex items-center cursor-pointer whitespace-nowrap">
+                        <input 
+                          type="checkbox" 
+                          checked={formData.isPerLb || false} 
+                          onChange={e => setFormData({...formData, isPerLb: e.target.checked})}
+                          className="mr-2 accent-primary w-4 h-4 rounded border-outline-variant"
+                        />
+                        <span className="text-sm font-medium text-on-surface">Per lb</span>
+                      </label>
+                    </div>
                   </div>
                   <div className="flex items-center pt-6">
                     <label className="flex items-center cursor-pointer">

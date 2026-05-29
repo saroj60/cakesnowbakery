@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { getProducts } from '../services/db';
 import { useCart } from '../context/CartContext';
 import { ShoppingBag, Star, ArrowRight, Sparkles, MessageCircle, Clock, Heart } from 'lucide-react';
@@ -24,7 +25,7 @@ const SHOWCASE_CAKES = [
     rating: '4.8',
     reviews: '395',
     price: '1,400',
-    image: 'https://images.unsplash.com/photo-1535141192574-5d4897c13636?w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&q=80&w=800',
     bgColor: 'from-rose-950/20 to-rose-900/5',
     accentColor: 'text-rose-800 bg-rose-100 dark:bg-rose-950 dark:text-rose-200'
   },
@@ -36,162 +37,132 @@ const SHOWCASE_CAKES = [
     rating: '4.9',
     reviews: '312',
     price: '1,500',
-    image: 'https://images.unsplash.com/photo-1616401784845-180882ba9ba8?w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1614707267537-b85aaf00c4b7?auto=format&fit=crop&q=80&w=800',
     bgColor: 'from-red-950/20 to-red-900/5',
     accentColor: 'text-red-800 bg-red-100 dark:bg-red-950 dark:text-red-200'
   }
 ];
 
 const Home = () => {
+  const [searchParams] = useSearchParams();
+  const searchQuery = searchParams.get('q') || '';
   const [cakes, setCakes] = useState([]);
   const { addToCart } = useCart();
   const [selectedShowcaseIndex, setSelectedShowcaseIndex] = useState(0);
+  const [activeFilter, setActiveFilter] = useState('All');
+  const [priceRange, setPriceRange] = useState(5000);
+  const [selectedCakeForCustomization, setSelectedCakeForCustomization] = useState(null);
+  const [customOptions, setCustomOptions] = useState({
+    weight: 1,
+    isEggless: false,
+    message: '',
+    flavor: 'Default / As Displayed',
+    shape: 'Round'
+  });
+
+  const filters = ['All', 'Eggless', 'Vegan', 'Gluten-free', 'Birthday'];
 
   useEffect(() => {
     getProducts().then(products => {
-      // Only show active products on storefront
-      setCakes(products.filter(p => p.isActive !== false));
+      const activeProducts = products.filter(p => p.isActive !== false);
+      const mockTags = ['Eggless', 'Vegan', 'Gluten-free', 'Birthday'];
+      
+      setCakes(activeProducts.map(p => ({
+        ...p,
+        tags: p.tags || [mockTags[Math.floor(Math.random() * mockTags.length)]]
+      })));
     });
   }, []);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSelectedShowcaseIndex((prev) => (prev + 1) % SHOWCASE_CAKES.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleAddToCartClick = (product) => {
+    setSelectedCakeForCustomization(product);
+    setCustomOptions({ weight: 1, isEggless: false, message: '', flavor: 'Default / As Displayed', shape: 'Round' });
+  };
+
+  const handleConfirmAddToCart = () => {
+    if (!selectedCakeForCustomization) return;
+    
+    const { weight, isEggless, message, flavor, shape } = customOptions;
+    const isCustomDesign = selectedCakeForCustomization.isCustomDesign;
+    const basePrice = typeof selectedCakeForCustomization.price === 'string' 
+        ? parseFloat(selectedCakeForCustomization.price.replace(/,/g, '')) 
+        : selectedCakeForCustomization.price;
+    const finalPrice = isCustomDesign ? 'TBD' : ((basePrice * weight) + (isEggless ? 100 : 0));
+
+    const customItem = {
+      ...selectedCakeForCustomization,
+      id: `${selectedCakeForCustomization.id}-${weight}lb-${isEggless ? 'eggless' : 'reg'}-${flavor.replace(/\s+/g, '')}-${shape}`,
+      name: `${selectedCakeForCustomization.name} (${weight} lb${isEggless ? ', Eggless' : ''})`,
+      price: finalPrice,
+      messageOnCake: message,
+      flavor: flavor,
+      shape: shape
+    };
+
+    addToCart(customItem);
+    setSelectedCakeForCustomization(null);
+  };
+
+  const filteredCakes = cakes.filter(cake => {
+    const matchesFilter = activeFilter === 'All' || (cake.tags && cake.tags.includes(activeFilter));
+    const cakePrice = parseFloat(String(cake.price).replace(/,/g, '')) || 0;
+    const matchesPrice = cakePrice <= priceRange;
+    const matchesSearch = !searchQuery || 
+      cake.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      (cake.description && cake.description.toLowerCase().includes(searchQuery.toLowerCase()));
+      
+    return matchesFilter && matchesPrice && matchesSearch;
+  });
+
   const activeCake = SHOWCASE_CAKES[selectedShowcaseIndex];
-  const bestSellers = cakes.slice(0, 3);
+  const bestSellers = filteredCakes.slice(0, 3);
 
   return (
     <main className="pt-24">
-      {/* Hero Section */}
-      <section className="relative w-full pt-8 pb-16 lg:py-24 overflow-hidden bg-gradient-to-br from-surface via-surface-container-low to-surface-container/30">
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary-fixed/10 rounded-full blur-3xl pointer-events-none opacity-40 z-0"></div>
-        <div className="absolute -bottom-10 left-0 w-[500px] h-[500px] bg-secondary-fixed/10 rounded-full blur-3xl pointer-events-none opacity-30 z-0"></div>
-
-        <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            
-            {/* Left Column: Copy & Actions */}
-            <div className="lg:col-span-7 flex flex-col items-start text-left">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-fixed/20 border border-primary/10 text-primary mb-6 animate-pulse">
-                <Sparkles size={16} className="text-primary-fixed-dim fill-primary-fixed-dim" />
-                <span className="text-xs uppercase tracking-wider font-semibold">Kathmandu's Finest Artisan Cakes</span>
-              </div>
-
-              {/* Title */}
-              <h1 className="font-headline-xl text-4xl md:text-[54px] md:leading-[1.1] text-primary mb-6">
-                Handcrafted Moments, <br />
-                <span className="text-secondary font-semibold italic">Freshly Baked.</span>
-              </h1>
-
-              {/* Description */}
-              <p className="font-body-md text-base md:text-lg text-on-surface-variant mb-8 max-w-xl leading-relaxed">
-                Discover the alchemy of flour, water, and time at Snowcakes. Every cake is a masterpiece designed to turn your celebrations into unforgettable memories.
-              </p>
-
-              {/* Showcase Detail Card */}
-              <div className="w-full bg-surface/80 backdrop-blur-md rounded-2xl p-5 border border-outline-variant/35 shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-8 transition-all duration-500 hover:shadow-[0_15px_30px_rgb(68,42,34,0.06)]">
-                <div className="flex justify-between items-center mb-3">
-                  <span className={`text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-full ${activeCake.accentColor}`}>
-                    {activeCake.tag}
-                  </span>
-                  <div className="flex items-center gap-1.5 text-amber-600 bg-amber-50 dark:bg-amber-950/40 dark:text-amber-400 px-2.5 py-1 rounded-full text-xs font-semibold">
-                    <Star size={14} className="fill-current" />
-                    <span>{activeCake.rating} ({activeCake.reviews} reviews)</span>
-                  </div>
-                </div>
-                <h3 className="font-headline-md text-xl md:text-2xl text-primary font-bold mb-2 transition-all duration-300">
-                  {activeCake.name}
-                </h3>
-                <p className="font-body-sm text-xs md:text-sm text-on-surface-variant mb-4 min-h-[40px]">
-                  {activeCake.description}
-                </p>
-                <div className="flex justify-between items-center pt-3 border-t border-outline-variant/20">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] uppercase tracking-wider text-on-surface-variant font-medium">Price</span>
-                    <span className="font-headline-md text-lg md:text-xl text-primary font-bold">Rs. {activeCake.price}</span>
-                  </div>
-                  <a href="#menu" className="inline-flex items-center gap-2 bg-primary text-white hover:bg-primary/90 font-label-md text-sm px-6 py-2.5 rounded-full shadow-md transition-all active:scale-95">
-                    <span>Order Now</span>
-                    <ArrowRight size={14} />
-                  </a>
-                </div>
-              </div>
-
-              {/* CTAs */}
-              <div className="flex flex-wrap gap-4 w-full sm:w-auto">
-                <a href="#menu" className="flex-1 sm:flex-initial text-center bg-primary text-white font-semibold px-8 py-4 rounded-full hover:opacity-90 transition-all active:scale-95 shadow-lg flex items-center justify-center gap-2">
-                  <ShoppingBag size={18} />
-                  <span>Explore Menu</span>
-                </a>
-                <a 
-                  href="https://wa.me/9779800000000" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="flex-1 sm:flex-initial text-center bg-white border-2 border-primary/20 text-primary font-semibold px-8 py-4 rounded-full hover:bg-primary-fixed/10 transition-all active:scale-95 shadow-sm flex items-center justify-center gap-2"
-                >
-                  <MessageCircle size={18} />
-                  <span>Custom Order</span>
-                </a>
-              </div>
-
-              {/* Trust badges */}
-              <div className="flex flex-wrap gap-x-6 gap-y-2 mt-8 text-xs font-semibold text-on-surface-variant border-t border-outline-variant/25 pt-6 w-full">
-                <span className="flex items-center gap-1.5"><Clock size={14} className="text-secondary" /> Same-day Kathmandu Delivery</span>
-                <span className="flex items-center gap-1.5"><Heart size={14} className="text-secondary" /> Baked Fresh Daily</span>
-              </div>
-            </div>
-
-            {/* Right Column: Visual Interactive Showcase */}
-            <div className="lg:col-span-5 flex flex-col items-center">
-              {/* Main Image Container */}
-              <div className="relative w-full max-w-[360px] aspect-[4/5] rounded-[3rem] overflow-hidden shadow-[0_20px_50px_rgba(68,42,34,0.15)] group transition-all duration-500 hover:translate-y-[-4px]">
-                {/* Background Ambient Color */}
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/30 via-transparent to-transparent z-10 pointer-events-none"></div>
-                
-                {/* The main Image */}
-                <img 
-                  className="w-full h-full object-cover transition-all duration-700 ease-in-out group-hover:scale-105" 
-                  alt={activeCake.name} 
-                  src={activeCake.image} 
-                />
-
-                {/* Floating Glass Badges */}
-                <div className="absolute top-6 left-6 z-20 backdrop-blur-md bg-white/70 dark:bg-black/60 px-4 py-2 rounded-2xl shadow-lg border border-white/20 flex items-center gap-2">
-                  <span className="text-xl">🎂</span>
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">Quality</span>
-                    <span className="text-xs text-primary font-bold">100% Handcrafted</span>
-                  </div>
-                </div>
-
-                <div className="absolute bottom-6 right-6 z-20 backdrop-blur-md bg-white/70 dark:bg-black/60 px-4 py-2.5 rounded-2xl shadow-lg border border-white/20 flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-ping"></div>
-                  <div className="flex flex-col">
-                    <span className="text-[9px] text-on-surface-variant uppercase tracking-wider font-semibold">Availability</span>
-                    <span className="text-xs text-primary font-bold">Freshly Baked Today</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Selector Thumbnails */}
-              <div className="flex items-center gap-4 mt-8 bg-surface-container-low p-2 rounded-full border border-outline-variant/30 shadow-inner">
-                {SHOWCASE_CAKES.map((cake, index) => (
-                  <button
-                    key={cake.id}
-                    onClick={() => setSelectedShowcaseIndex(index)}
-                    className={`relative w-16 h-16 rounded-full overflow-hidden border-2 transition-all duration-300 active:scale-90 ${selectedShowcaseIndex === index ? 'border-primary ring-2 ring-primary-fixed scale-110 shadow-md' : 'border-transparent opacity-60 hover:opacity-100 hover:scale-105'}`}
-                  >
-                    <img src={cake.image} alt={cake.name} className="w-full h-full object-cover" />
-                  </button>
-                ))}
-              </div>
-            </div>
-
+      {/* Static Hero Section */}
+      <section className="relative w-full h-[60vh] md:h-[80vh] overflow-hidden bg-surface-variant">
+        <img 
+          src="/hero.png" 
+          alt="Snow Cakes Hero" 
+          className="w-full h-full object-cover object-center" 
+        />
+        
+        {/* We removed the dark overlay and text since the new image has its own text. 
+            We just position the buttons at the bottom left to match the image layout. */}
+        <div className="absolute inset-0 z-20 flex flex-col justify-end p-8 md:p-16">
+          <div className="flex flex-col sm:flex-row gap-4 max-w-xl">
+            <a 
+              href="#menu" 
+              className="px-8 py-4 bg-primary text-white font-bold rounded-full text-lg hover:bg-primary/90 transition-all shadow-[0_10px_25px_rgba(68,42,34,0.3)] hover:scale-105 hover:-translate-y-1 active:scale-95 flex items-center gap-2 justify-center"
+            >
+              Explore Cakes
+              <ArrowRight size={20} />
+            </a>
+            <button 
+              onClick={() => handleAddToCartClick({
+                id: 'custom-cake-base',
+                name: 'Custom Design Cake',
+                price: 0,
+                isCustomDesign: true,
+                description: 'Start with a delicious base and let us know your special instructions.',
+                image: 'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?auto=format&fit=crop&q=80&w=800'
+              })}
+              className="px-8 py-4 bg-white text-primary font-bold rounded-full text-lg hover:bg-gray-100 transition-all shadow-[0_10px_25px_rgba(0,0,0,0.1)] hover:scale-105 hover:-translate-y-1 active:scale-95 flex items-center gap-2 justify-center"
+            >
+              Customize Cake
+              <Sparkles size={20} />
+            </button>
           </div>
         </div>
       </section>
 
-
-      {/* Freshly Baked Promo */}
       <section className="py-16 px-margin-mobile bg-surface">
         <div className="max-w-container-max mx-auto text-center">
           <span className="font-label-lg text-label-lg text-primary uppercase tracking-[0.2em] mb-4 block">Our Commitment</span>
@@ -216,27 +187,17 @@ const Home = () => {
                   key={cake.id} 
                   className="bg-surface rounded-3xl overflow-hidden border border-outline-variant/20 shadow-[0_10px_30px_rgba(68,42,34,0.04)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(68,42,34,0.08)] group flex flex-col relative"
                 >
-                  {/* Ribbons & Badges */}
                   <div className="absolute top-4 left-4 z-10 bg-secondary text-white text-[10px] font-bold uppercase tracking-wider px-3.5 py-1.5 rounded-full shadow-md">
                     🔥 Best Seller
                   </div>
-                  <div className="absolute top-4 right-4 z-10 backdrop-blur-md bg-white/85 px-3 py-1 rounded-full text-xs font-semibold text-amber-700 flex items-center gap-1 shadow-sm">
-                    <Star size={12} className="fill-amber-600 stroke-amber-600" />
-                    <span>4.9</span>
-                  </div>
-
-                  {/* Image Container */}
                   <div className="aspect-[4/3] w-full overflow-hidden bg-surface-variant relative">
                     <img 
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
                       alt={cake.name} 
                       src={cake.image || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80'} 
-                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80' }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
 
-                  {/* Details */}
                   <div className="p-6 flex flex-col justify-between flex-grow">
                     <div>
                       <h4 className="font-headline-md text-lg md:text-xl text-primary font-bold mb-2 group-hover:text-secondary transition-colors duration-300 line-clamp-1">
@@ -254,7 +215,7 @@ const Home = () => {
                       </div>
                       
                       <button 
-                        onClick={() => addToCart(cake)}
+                        onClick={() => handleAddToCartClick(cake)}
                         className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full bg-primary text-white font-label-lg hover:bg-primary/95 transition-all shadow-md active:scale-95"
                       >
                         <ShoppingBag size={14} />
@@ -271,20 +232,53 @@ const Home = () => {
 
       {/* Products Grid */}
       <section id="menu" className="py-16 max-w-container-max mx-auto px-margin-mobile">
-        <div className="text-center mb-16">
-          <h2 className="font-headline-lg text-headline-lg text-primary">Our Cakes</h2>
-          <p className="font-body-md text-body-md text-on-surface-variant mt-2">Community favorites, baked to perfection.</p>
+        <div className="text-center mb-10">
+          <h2 className="font-headline-lg text-headline-lg text-primary">
+            {searchQuery ? `Search Results for "${searchQuery}"` : "Our Cakes"}
+          </h2>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-6 bg-surface-container-low p-6 rounded-2xl border border-outline-variant/30 mb-10 shadow-sm mt-6">
+            <div className="flex flex-wrap justify-center gap-2">
+              {filters.map(filter => (
+                <button
+                  key={filter}
+                  onClick={() => setActiveFilter(filter)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    activeFilter === filter 
+                      ? 'bg-primary text-white shadow-md' 
+                      : 'bg-surface text-on-surface hover:bg-surface-variant border border-outline-variant'
+                  }`}
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
+            
+            <div className="w-full md:w-64 flex flex-col items-center border-t md:border-t-0 md:border-l border-outline-variant/30 pt-4 md:pt-0 md:pl-6">
+              <label className="text-sm font-medium text-on-surface mb-2 flex justify-between w-full">
+                <span>Max Price</span>
+                <span className="text-primary font-bold">Rs. {priceRange}</span>
+              </label>
+              <input 
+                type="range" 
+                min="500" 
+                max="5000" 
+                step="100" 
+                value={priceRange}
+                onChange={(e) => setPriceRange(Number(e.target.value))}
+                className="w-full accent-primary"
+              />
+            </div>
+          </div>
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-gutter">
-          {cakes.map((cake) => (
+          {filteredCakes.map((cake) => (
             <div key={cake.id} className="bg-surface-container-low rounded-xl p-3 md:p-6 shadow-[0_10px_30px_rgba(62,39,35,0.08)] group flex flex-col">
               <div className="aspect-square overflow-hidden rounded-lg mb-4 md:mb-6 bg-surface-variant">
                 <img 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                   alt={cake.name} 
                   src={cake.image || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80'} 
-                  onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80' }}
                 />
               </div>
               <div className="flex justify-between items-start mb-2">
@@ -293,7 +287,7 @@ const Home = () => {
               </div>
               <p className="font-body-sm text-[10px] md:text-body-sm text-on-surface-variant mb-4 md:mb-6 flex-grow line-clamp-2">{cake.description}</p>
               <button 
-                onClick={() => addToCart(cake)}
+                onClick={() => handleAddToCartClick(cake)}
                 className="w-full py-4 rounded-full bg-primary text-white font-label-lg hover:bg-primary/90 transition-all shadow-md flex items-center justify-center gap-2"
               >
                 <ShoppingBag size={16} className="md:w-5 md:h-5" />
@@ -301,13 +295,222 @@ const Home = () => {
               </button>
             </div>
           ))}
-          {cakes.length === 0 && (
+          {filteredCakes.length === 0 && (
             <div className="col-span-full text-center py-10">
-              <p className="text-on-surface-variant text-lg">No cakes available right now. Check back later!</p>
+              <p className="text-on-surface-variant text-lg">No cakes available matching these filters.</p>
             </div>
           )}
         </div>
       </section>
+
+      {/* Customer Reviews Section */}
+      <section className="py-20 bg-surface-container-low/50 border-t border-outline-variant/15 overflow-hidden">
+        <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+            <div>
+              <span className="font-label-lg text-label-lg text-secondary uppercase tracking-[0.2em] mb-3 block">Testimonials</span>
+              <h2 className="font-headline-lg text-3xl md:text-4xl text-primary font-bold">What Our Customers Say</h2>
+            </div>
+            
+            <div className="flex items-center gap-3 bg-white p-3 md:p-4 rounded-xl shadow-md border border-outline-variant/20 shrink-0">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                <Star size={20} className="text-amber-500 fill-amber-500" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1 mb-0.5">
+                  <span className="font-bold text-lg text-on-surface">4.9</span>
+                  <div className="flex">
+                    {[1,2,3,4,5].map(i => <Star key={i} size={12} className="fill-amber-500 text-amber-500" />)}
+                  </div>
+                </div>
+                <span className="text-xs text-on-surface-variant font-medium">Based on 450+ Google Reviews</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            {/* Review 1 */}
+            <div className="bg-surface p-8 rounded-3xl shadow-sm border border-outline-variant/20 relative">
+              <div className="absolute top-6 right-6 text-primary/10">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
+              </div>
+              <div className="flex gap-1 mb-4">
+                {[1,2,3,4,5].map(i => <Star key={i} size={16} className="fill-amber-500 text-amber-500" />)}
+              </div>
+              <p className="font-body-md text-on-surface-variant mb-8 italic">"The vegan chocolate cake we ordered for my daughter's birthday was absolutely phenomenal. Nobody could even tell it was vegan! The texture was perfect and it looked stunning."</p>
+              <div className="flex items-center gap-4">
+                <img src="https://i.pravatar.cc/150?img=44" alt="Customer" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
+                <div>
+                  <h5 className="font-headline-sm text-sm font-bold text-primary">Priya S.</h5>
+                  <span className="text-xs text-on-surface-variant">Ordered Vegan Chocolate</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Review 2 */}
+            <div className="bg-surface p-8 rounded-3xl shadow-sm border border-outline-variant/20 relative">
+              <div className="absolute top-6 right-6 text-primary/10">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
+              </div>
+              <div className="flex gap-1 mb-4">
+                {[1,2,3,4,5].map(i => <Star key={i} size={16} className="fill-amber-500 text-amber-500" />)}
+              </div>
+              <p className="font-body-md text-on-surface-variant mb-8 italic">"Snow Cakes handled my custom order perfectly. I sent a reference image for an anniversary cake and they nailed the design and the flavor. Best bakery in Lalitpur!"</p>
+              <div className="flex items-center gap-4">
+                <img src="https://i.pravatar.cc/150?img=33" alt="Customer" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
+                <div>
+                  <h5 className="font-headline-sm text-sm font-bold text-primary">Aman T.</h5>
+                  <span className="text-xs text-on-surface-variant">Custom Anniversary Cake</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Review 3 */}
+            <div className="bg-surface p-8 rounded-3xl shadow-sm border border-outline-variant/20 relative">
+              <div className="absolute top-6 right-6 text-primary/10">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" /></svg>
+              </div>
+              <div className="flex gap-1 mb-4">
+                {[1,2,3,4,5].map(i => <Star key={i} size={16} className="fill-amber-500 text-amber-500" />)}
+              </div>
+              <p className="font-body-md text-on-surface-variant mb-8 italic">"Their gluten-free options are a lifesaver. It's so hard to find good GF baked goods, but their strawberry cream cake was moist, fluffy, and completely safe for me."</p>
+              <div className="flex items-center gap-4">
+                <img src="https://i.pravatar.cc/150?img=5" alt="Customer" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
+                <div>
+                  <h5 className="font-headline-sm text-sm font-bold text-primary">Sita M.</h5>
+                  <span className="text-xs text-on-surface-variant">Gluten-Free Strawberry</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Customization Modal */}
+      {selectedCakeForCustomization && (
+        <div className="fixed inset-0 bg-black/60 z-[70] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-surface rounded-2xl w-full max-w-md shadow-2xl flex flex-col overflow-hidden">
+            <div className="relative h-40 bg-surface-variant">
+              <img 
+                src={selectedCakeForCustomization.image || 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=800&q=80'} 
+                alt={selectedCakeForCustomization.name}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
+                <h3 className="text-white font-headline-md text-2xl font-bold">{selectedCakeForCustomization.name}</h3>
+              </div>
+              <button 
+                onClick={() => setSelectedCakeForCustomization(null)}
+                className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full hover:bg-black/80 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-6 overflow-y-auto max-h-[60vh]">
+              <div>
+                <label className="block font-medium text-on-surface mb-2">Select Size / Weight</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {[1, 2, 3, 5].map(w => (
+                    <button
+                      key={w}
+                      type="button"
+                      onClick={() => setCustomOptions(prev => ({ ...prev, weight: w }))}
+                      className={`py-2 rounded-lg font-medium transition-colors border ${
+                        customOptions.weight === w 
+                          ? 'bg-primary text-white border-primary' 
+                          : 'bg-surface text-on-surface border-outline-variant hover:border-primary/50'
+                      }`}
+                    >
+                      {w} lb
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="flex items-center gap-3 cursor-pointer p-3 rounded-xl border border-outline-variant bg-surface-container-low hover:border-primary/50 transition-colors">
+                  <input 
+                    type="checkbox"
+                    checked={customOptions.isEggless}
+                    onChange={(e) => setCustomOptions(prev => ({ ...prev, isEggless: e.target.checked }))}
+                    className="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary accent-primary"
+                  />
+                  <div className="flex-1">
+                    <span className="block font-medium text-on-surface">Make it Eggless</span>
+                    <span className="block text-xs text-on-surface-variant">+ Rs. 100 per cake</span>
+                  </div>
+                </label>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-medium text-on-surface mb-2">Flavor</label>
+                  <select 
+                    value={customOptions.flavor}
+                    onChange={(e) => setCustomOptions(prev => ({ ...prev, flavor: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary outline-none transition-all"
+                  >
+                    <option value="Default / As Displayed">As Displayed</option>
+                    <option value="Vanilla">Classic Vanilla</option>
+                    <option value="Chocolate">Rich Chocolate</option>
+                    <option value="Strawberry">Fresh Strawberry</option>
+                    <option value="Black Forest">Black Forest</option>
+                    <option value="Pineapple">Pineapple</option>
+                    <option value="Red Velvet">Red Velvet</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-medium text-on-surface mb-2">Shape</label>
+                  <select 
+                    value={customOptions.shape}
+                    onChange={(e) => setCustomOptions(prev => ({ ...prev, shape: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary outline-none transition-all"
+                  >
+                    <option value="Round">Round</option>
+                    <option value="Square">Square</option>
+                    <option value="Heart">Heart-shaped</option>
+                    <option value="Rectangle">Rectangle</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-medium text-on-surface mb-2">Message on Cake (Optional)</label>
+                <input 
+                  type="text"
+                  maxLength={30}
+                  placeholder="e.g., Happy Birthday John"
+                  value={customOptions.message}
+                  onChange={(e) => setCustomOptions(prev => ({ ...prev, message: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary outline-none transition-all"
+                />
+                <div className="text-right mt-1 text-xs text-on-surface-variant">{customOptions.message.length}/30</div>
+              </div>
+              
+              <div className="bg-surface-container-low p-4 rounded-xl flex justify-between items-center">
+                <span className="font-medium text-on-surface-variant">Total Price:</span>
+                <span className="font-bold text-xl text-primary">
+                  {selectedCakeForCustomization.isCustomDesign 
+                    ? 'To Be Determined' 
+                    : `Rs. ${(((typeof selectedCakeForCustomization.price === 'string' ? parseFloat(selectedCakeForCustomization.price.replace(/,/g, '')) : selectedCakeForCustomization.price) * customOptions.weight) + (customOptions.isEggless ? 100 : 0)).toFixed(2)}`
+                  }
+                </span>
+              </div>
+            </div>
+            
+            <div className="p-4 border-t border-outline-variant/30 bg-surface">
+              <button 
+                onClick={handleConfirmAddToCart}
+                className="w-full py-4 rounded-xl bg-primary text-white font-bold text-lg hover:bg-primary/90 transition-all shadow-md flex justify-center items-center gap-2"
+              >
+                <ShoppingBag size={20} />
+                Confirm & Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

@@ -42,12 +42,12 @@ const AdminLogin = () => {
           <div>
             <label className="block text-sm font-medium text-on-surface mb-1">Email</label>
             <input 
-              type="email" 
+              type="text" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface focus:ring-2 focus:ring-primary outline-none transition-all"
-              placeholder="admin@snowcakes.com"
+              placeholder="cakesnowbakery.com"
             />
           </div>
           <div>
@@ -70,7 +70,7 @@ const AdminLogin = () => {
           </button>
         </form>
         <p className="text-center text-sm text-on-surface-variant mt-6">
-          Use admin@snowcakes.com / admin123
+          Use cakesnowbakery.com / cakesnowbakery@@2026
         </p>
       </div>
     </div>

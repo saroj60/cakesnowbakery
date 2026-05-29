@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, ShoppingCart, Search, MapPin, ChevronDown, X } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, ShoppingCart, Search, MapPin, ChevronDown, X, User } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import logo from '../assets/logo.jpg';
 
@@ -9,6 +9,16 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/?q=${encodeURIComponent(searchQuery.trim())}`);
+      setIsMobileMenuOpen(false);
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -65,22 +75,33 @@ const Navbar = () => {
               </div>
 
               <a href="/#menu" className="hover:text-primary transition-colors">Best Sellers</a>
-              <a href="/#menu" className="hover:text-primary transition-colors">Special Orders</a>
+              <Link to="/custom-order" className="hover:text-primary transition-colors font-bold text-primary">Custom Order</Link>
             </nav>
 
             {/* Right Actions */}
             <div className="flex items-center gap-2 md:gap-4">
-              <div className="hidden lg:flex relative">
+              <form onSubmit={handleSearch} className="hidden lg:flex relative">
                 <input 
                   type="text" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search products..." 
                   className="pl-10 pr-4 py-2 rounded-full border border-outline-variant bg-surface focus:ring-2 focus:ring-primary outline-none transition-all w-64"
                 />
-                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-              </div>
+                <button type="submit" className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors">
+                  <Search size={18} />
+                </button>
+              </form>
               <button className="lg:hidden text-primary p-2">
                 <Search size={24} />
               </button>
+              <Link 
+                to="/admin/login"
+                className="text-primary p-2 hover:bg-surface-container-low rounded-full transition-colors hidden sm:block"
+                title="Admin Login"
+              >
+                <User size={24} />
+              </Link>
               <button 
                 className="relative text-primary p-2 hover:bg-surface-container-low rounded-full transition-colors"
                 onClick={() => setIsCartOpen(true)}
@@ -110,14 +131,18 @@ const Navbar = () => {
             </button>
           </div>
           <div className="p-4 flex flex-col gap-4 overflow-y-auto max-h-[calc(100vh-70px)]">
-            <div className="relative mb-4">
+            <form onSubmit={handleSearch} className="relative mb-4">
               <input 
                 type="text" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search..." 
                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-outline-variant bg-surface-container-low focus:ring-2 focus:ring-primary outline-none"
               />
-              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" />
-            </div>
+              <button type="submit" className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors">
+                <Search size={18} />
+              </button>
+            </form>
             
             <Link to="/" onClick={toggleMobileMenu} className="font-medium text-lg py-2 border-b border-outline-variant/10">Home</Link>
             <a href="/#menu" onClick={toggleMobileMenu} className="font-medium text-lg py-2 border-b border-outline-variant/10">Shop</a>
@@ -135,6 +160,12 @@ const Navbar = () => {
             </div>
 
             <a href="/#menu" onClick={toggleMobileMenu} className="font-medium text-lg py-2 border-b border-outline-variant/10">Best Sellers</a>
+            <Link to="/custom-order" onClick={toggleMobileMenu} className="font-bold text-primary text-lg py-2 border-b border-outline-variant/10">Custom Order</Link>
+            
+            <Link to="/admin/login" onClick={toggleMobileMenu} className="font-medium text-on-surface-variant text-lg py-2 mt-auto flex items-center gap-2">
+              <User size={20} />
+              Admin Login
+            </Link>
           </div>
         </div>
       </div>
