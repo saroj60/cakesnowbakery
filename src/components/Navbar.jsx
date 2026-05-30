@@ -75,6 +75,7 @@ const Navbar = () => {
               </div>
 
               <a href="/#menu" className="hover:text-primary transition-colors">Best Sellers</a>
+              <Link to="/decorations" className="hover:text-primary transition-colors">Decorations</Link>
               <Link to="/custom-order" className="hover:text-primary transition-colors font-bold text-primary">Custom Order</Link>
             </nav>
 
@@ -160,6 +161,7 @@ const Navbar = () => {
             </div>
 
             <a href="/#menu" onClick={toggleMobileMenu} className="font-medium text-lg py-2 border-b border-outline-variant/10">Best Sellers</a>
+            <Link to="/decorations" onClick={toggleMobileMenu} className="font-medium text-lg py-2 border-b border-outline-variant/10">Decorations</Link>
             <Link to="/custom-order" onClick={toggleMobileMenu} className="font-bold text-primary text-lg py-2 border-b border-outline-variant/10">Custom Order</Link>
             
             <Link to="/admin/login" onClick={toggleMobileMenu} className="font-medium text-on-surface-variant text-lg py-2 mt-auto flex items-center gap-2">

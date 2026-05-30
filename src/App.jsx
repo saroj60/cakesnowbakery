@@ -6,6 +6,7 @@ import CartDrawer from './components/CartDrawer';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 import Home from './pages/Home';
 import CustomOrder from './pages/CustomOrder';
+import Decorations from './pages/Decorations';
 import { CartProvider } from './context/CartContext';
 
 import AdminLogin from './pages/admin/AdminLogin';
@@ -35,6 +36,7 @@ function App() {
           <Route element={<StorefrontLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/custom-order" element={<CustomOrder />} />
+            <Route path="/decorations" element={<Decorations />} />
           </Route>
 
           {/* Admin & Auth Routes */}
