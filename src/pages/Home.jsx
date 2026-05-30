@@ -322,8 +322,8 @@ const Home = () => {
       {filteredDecorations.length > 0 && (
         <section className="py-16 max-w-container-max mx-auto px-margin-mobile bg-surface-container-low/30 border-t border-outline-variant/15">
           <div className="text-center mb-10">
-            <span className="font-label-lg text-label-lg text-secondary uppercase tracking-[0.2em] mb-3 block">Party Supplies</span>
-            <h2 className="font-headline-lg text-3xl md:text-4xl text-primary font-bold">Decorations & Add-ons</h2>
+            <span className="font-label-lg text-label-lg text-secondary uppercase tracking-[0.2em] mb-3 block">Extras</span>
+            <h2 className="font-headline-lg text-3xl md:text-4xl text-primary font-bold">Decoration Items</h2>
             <div className="w-16 h-1 bg-secondary mx-auto rounded-full mt-4"></div>
           </div>
           
