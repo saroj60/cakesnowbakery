@@ -1,5 +1,5 @@
 import logo from '../assets/logo.jpg';
-import { MapPin, Mail, Phone, Clock } from 'lucide-react';
+import { MapPin, Mail, Phone, Clock, Star } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -75,14 +75,25 @@ const Footer = () => {
               title="Google Maps Location"
             ></iframe>
           </div>
-          <a 
-            href="https://www.google.com/maps/place/Cake+Snow+Bakery+%26+Coffee+Shop/@27.6672839,85.3510227,17z/data=!3m1!4b1!4m6!3m5!1s0x39eb19b88d33e753:0x7f96ce6e2ddc3581!8m2!3d27.6672792!4d85.3535976!16s%2Fg%2F11kj8wql10" 
-            target="_blank" 
-            rel="noreferrer"
-            className="text-xs text-primary font-medium hover:underline flex items-center justify-center gap-1"
-          >
-            <MapPin size={12} /> Open in Google Maps
-          </a>
+          <div className="flex flex-col gap-2 mt-1">
+            <a 
+              href="https://www.google.com/maps/place/Cake+Snow+Bakery+%26+Coffee+Shop/@27.6672839,85.3510227,17z/data=!3m1!4b1!4m6!3m5!1s0x39eb19b88d33e753:0x7f96ce6e2ddc3581!8m2!3d27.6672792!4d85.3535976!16s%2Fg%2F11kj8wql10" 
+              target="_blank" 
+              rel="noreferrer"
+              className="text-xs text-primary font-medium hover:underline flex items-center justify-center gap-1"
+            >
+              <MapPin size={12} /> Open in Google Maps
+            </a>
+            <a 
+              href="https://search.google.com/local/writereview?placeid=ChIJ8-UzjbgZ6zkRgYXcLW7Oln8" // Note: If this placeid doesn't work perfectly, the user can replace this href with their exact Google Business review link
+              target="_blank" 
+              rel="noreferrer"
+              className="mt-1 w-full py-2 bg-white text-primary border border-primary/20 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-colors shadow-sm"
+              title="If the link fails, replace the href in Footer.jsx with your Google My Business review link"
+            >
+              <Star size={16} className="text-yellow-500 fill-yellow-500" /> Rate us on Google
+            </a>
+          </div>
         </div>
 
       </div>
