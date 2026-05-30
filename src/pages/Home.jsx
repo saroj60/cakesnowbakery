@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { getProducts } from '../services/db';
 import { useCart } from '../context/CartContext';
 import { ShoppingBag, Star, ArrowRight, Sparkles, MessageCircle, Clock, Heart } from 'lucide-react';
@@ -145,20 +145,13 @@ const Home = () => {
               Explore Cakes
               <ArrowRight size={20} />
             </a>
-            <button 
-              onClick={() => handleAddToCartClick({
-                id: 'custom-cake-base',
-                name: 'Custom Design Cake',
-                price: 0,
-                isCustomDesign: true,
-                description: 'Start with a delicious base and let us know your special instructions.',
-                image: 'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?auto=format&fit=crop&q=80&w=800'
-              })}
+            <Link 
+              to="/custom-order"
               className="px-8 py-4 bg-white text-primary font-bold rounded-full text-lg hover:bg-gray-100 transition-all shadow-[0_10px_25px_rgba(0,0,0,0.1)] hover:scale-105 hover:-translate-y-1 active:scale-95 flex items-center gap-2 justify-center"
             >
               Customize Cake
               <Sparkles size={20} />
-            </button>
+            </Link>
           </div>
         </div>
       </section>
