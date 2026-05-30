@@ -208,6 +208,7 @@ const Products = () => {
                       <option value="Donuts">Donuts</option>
                       <option value="Cookies">Cookies</option>
                       <option value="Bread">Bread</option>
+                      <option value="Decorations">Decorations</option>
                     </select>
                   </div>
                   <div>

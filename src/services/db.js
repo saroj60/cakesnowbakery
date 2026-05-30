@@ -101,6 +101,36 @@ export const getProducts = async () => {
         image: 'https://images.unsplash.com/photo-1519869491916-8ca6f615d6bd?auto=format&fit=crop&q=80&w=800',
         isActive: true,
         tags: ['Opening a new business']
+      },
+      {
+        id: 'mock-dec-1',
+        name: 'Happy Birthday Banner (Gold)',
+        category: 'Decorations',
+        description: 'Premium metallic gold foil "Happy Birthday" letter banner.',
+        price: 250,
+        image: 'https://images.unsplash.com/photo-1530103862676-de8892b12a43?w=800&q=80',
+        isActive: true,
+        tags: ['Birthdays']
+      },
+      {
+        id: 'mock-dec-2',
+        name: 'Pastel Party Balloons (Pack of 20)',
+        category: 'Decorations',
+        description: 'High-quality latex balloons in assorted pastel colors.',
+        price: 150,
+        image: 'https://images.unsplash.com/photo-1506806732259-39c2d0268443?w=800&q=80',
+        isActive: true,
+        tags: ['Birthdays', 'Baby showers']
+      },
+      {
+        id: 'mock-dec-3',
+        name: 'Sparkler Candles',
+        category: 'Decorations',
+        description: 'Set of 4 smokeless sparkler candles for that extra special cake presentation.',
+        price: 300,
+        image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=800&q=80',
+        isActive: true,
+        tags: ['Anniversaries', 'Weddings']
       }
     ];
   }

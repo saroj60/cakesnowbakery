@@ -94,7 +94,7 @@ const Home = () => {
     const basePrice = typeof selectedCakeForCustomization.price === 'string' 
         ? parseFloat(selectedCakeForCustomization.price.replace(/,/g, '')) 
         : selectedCakeForCustomization.price;
-    const finalPrice = isCustomDesign ? 'TBD' : ((basePrice * weight) + (isEggless ? 100 : 0));
+    const finalPrice = isCustomDesign ? 'TBD' : ((basePrice * weight) + (isEggless ? 150 : 0));
 
     const customItem = {
       ...selectedCakeForCustomization,
@@ -110,7 +110,20 @@ const Home = () => {
     setSelectedCakeForCustomization(null);
   };
 
+  const handleAddDecorationToCart = (decoration) => {
+    addToCart({
+      ...decoration,
+      id: `${decoration.id}-1`,
+      name: decoration.name,
+      price: decoration.price,
+      messageOnCake: '',
+      flavor: 'N/A',
+      shape: 'N/A'
+    });
+  };
+
   const filteredCakes = cakes.filter(cake => {
+    if (cake.category === 'Decorations') return false;
     const matchesFilter = activeFilter === 'All' || (cake.tags && cake.tags.includes(activeFilter));
     const cakePrice = parseFloat(String(cake.price).replace(/,/g, '')) || 0;
     const matchesPrice = cakePrice <= priceRange;
@@ -119,6 +132,14 @@ const Home = () => {
       (cake.description && cake.description.toLowerCase().includes(searchQuery.toLowerCase()));
       
     return matchesFilter && matchesPrice && matchesSearch;
+  });
+
+  const filteredDecorations = cakes.filter(cake => {
+    if (cake.category !== 'Decorations') return false;
+    const matchesSearch = !searchQuery || 
+      cake.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      (cake.description && cake.description.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesSearch;
   });
 
   const activeCake = SHOWCASE_CAKES[selectedShowcaseIndex];
@@ -296,6 +317,42 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Decorations Section */}
+      {filteredDecorations.length > 0 && (
+        <section className="py-16 max-w-container-max mx-auto px-margin-mobile bg-surface-container-low/30 border-t border-outline-variant/15">
+          <div className="text-center mb-10">
+            <span className="font-label-lg text-label-lg text-secondary uppercase tracking-[0.2em] mb-3 block">Party Supplies</span>
+            <h2 className="font-headline-lg text-3xl md:text-4xl text-primary font-bold">Decorations & Add-ons</h2>
+            <div className="w-16 h-1 bg-secondary mx-auto rounded-full mt-4"></div>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-gutter">
+            {filteredDecorations.map((item) => (
+              <div key={item.id} className="bg-surface rounded-xl p-3 md:p-6 shadow-[0_10px_30px_rgba(62,39,35,0.05)] border border-outline-variant/10 group flex flex-col">
+                <div className="aspect-square overflow-hidden rounded-lg mb-4 bg-surface-variant relative p-2">
+                  <img 
+                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 mix-blend-multiply" 
+                    alt={item.name} 
+                    src={item.image || 'https://via.placeholder.com/150'} 
+                  />
+                </div>
+                <div className="flex flex-col mb-2">
+                  <h4 className="font-headline-md text-sm md:text-base text-primary line-clamp-2 min-h-[2.5rem]">{item.name}</h4>
+                  <span className="font-bold text-lg text-on-surface mt-1">Rs. {item.price}</span>
+                </div>
+                <button 
+                  onClick={() => handleAddDecorationToCart(item)}
+                  className="w-full mt-auto py-3 rounded-lg bg-secondary text-white font-medium hover:bg-secondary/90 transition-all shadow-sm flex items-center justify-center gap-2"
+                >
+                  <ShoppingBag size={16} />
+                  <span className="text-sm">Add to Cart</span>
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Customer Reviews Section */}
       <section className="py-20 bg-surface-container-low/50 border-t border-outline-variant/15 overflow-hidden">
         <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
@@ -402,23 +459,16 @@ const Home = () => {
             
             <div className="p-6 space-y-6 overflow-y-auto max-h-[60vh]">
               <div>
-                <label className="block font-medium text-on-surface mb-2">Select Size / Weight</label>
-                <div className="grid grid-cols-4 gap-2">
-                  {[1, 2, 3, 5].map(w => (
-                    <button
-                      key={w}
-                      type="button"
-                      onClick={() => setCustomOptions(prev => ({ ...prev, weight: w }))}
-                      className={`py-2 rounded-lg font-medium transition-colors border ${
-                        customOptions.weight === w 
-                          ? 'bg-primary text-white border-primary' 
-                          : 'bg-surface text-on-surface border-outline-variant hover:border-primary/50'
-                      }`}
-                    >
-                      {w} lb
-                    </button>
-                  ))}
-                </div>
+                <label className="block font-medium text-on-surface mb-2">Select Size / Weight (lbs)</label>
+                <input 
+                  type="number" 
+                  min="0.5" 
+                  step="0.5"
+                  placeholder="e.g., 1.5"
+                  value={customOptions.weight || ''}
+                  onChange={(e) => setCustomOptions(prev => ({ ...prev, weight: parseFloat(e.target.value) }))}
+                  className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary outline-none transition-all"
+                />
               </div>
 
               <div>
@@ -431,7 +481,7 @@ const Home = () => {
                   />
                   <div className="flex-1">
                     <span className="block font-medium text-on-surface">Make it Eggless</span>
-                    <span className="block text-xs text-on-surface-variant">+ Rs. 100 per cake</span>
+                    <span className="block text-xs text-on-surface-variant">+ Rs. 150 per cake</span>
                   </div>
                 </label>
               </div>
@@ -486,7 +536,7 @@ const Home = () => {
                 <span className="font-bold text-xl text-primary">
                   {selectedCakeForCustomization.isCustomDesign 
                     ? 'To Be Determined' 
-                    : `Rs. ${(((typeof selectedCakeForCustomization.price === 'string' ? parseFloat(selectedCakeForCustomization.price.replace(/,/g, '')) : selectedCakeForCustomization.price) * customOptions.weight) + (customOptions.isEggless ? 100 : 0)).toFixed(2)}`
+                    : `Rs. ${(((typeof selectedCakeForCustomization.price === 'string' ? parseFloat(selectedCakeForCustomization.price.replace(/,/g, '')) : selectedCakeForCustomization.price) * (customOptions.weight || 0)) + (customOptions.isEggless ? 150 : 0)).toFixed(2)}`
                   }
                 </span>
               </div>
