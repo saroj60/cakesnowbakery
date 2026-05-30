@@ -50,7 +50,7 @@ const Home = () => {
   const { addToCart } = useCart();
   const [selectedShowcaseIndex, setSelectedShowcaseIndex] = useState(0);
   const [activeFilter, setActiveFilter] = useState('All');
-  const [priceRange, setPriceRange] = useState(5000);
+  const [priceRange, setPriceRange] = useState(2000);
   const [selectedCakeForCustomization, setSelectedCakeForCustomization] = useState(null);
   const [customOptions, setCustomOptions] = useState({
     weight: 1,
@@ -60,16 +60,16 @@ const Home = () => {
     shape: 'Round'
   });
 
-  const filters = ['All', 'Eggless', 'Vegan', 'Gluten-free', 'Birthday'];
+  const filters = ['All', 'Birthdays', 'Weddings', 'Engagement parties', 'Anniversaries', 'Baby showers', 'Job promotions', 'Passing an exam', 'Completing a major project', 'Opening a new business', 'Buying a new home'];
 
   useEffect(() => {
     getProducts().then(products => {
       const activeProducts = products.filter(p => p.isActive !== false);
-      const mockTags = ['Eggless', 'Vegan', 'Gluten-free', 'Birthday'];
+      const mockTags = ['Birthdays', 'Weddings', 'Anniversaries'];
       
       setCakes(activeProducts.map(p => ({
         ...p,
-        tags: p.tags || [mockTags[Math.floor(Math.random() * mockTags.length)]]
+        tags: p.tags && p.tags.length > 0 && p.tags[0] ? p.tags : [mockTags[Math.floor(Math.random() * mockTags.length)]]
       })));
     });
   }, []);
@@ -127,16 +127,16 @@ const Home = () => {
   return (
     <main className="pt-24">
       {/* Static Hero Section */}
-      <section className="relative w-full h-[60vh] md:h-[80vh] overflow-hidden bg-surface-variant">
-        <img 
-          src="/hero.png" 
-          alt="Snow Cakes Hero" 
-          className="w-full h-full object-cover object-center" 
-        />
+      <section className="relative w-full flex flex-col md:block md:h-[80vh] bg-[#1a110a] overflow-hidden">
+        <div className="w-full md:absolute md:inset-0">
+          <img 
+            src="/hero.png" 
+            alt="Snow Cakes Hero" 
+            className="w-full h-auto md:h-full object-cover object-top" 
+          />
+        </div>
         
-        {/* We removed the dark overlay and text since the new image has its own text. 
-            We just position the buttons at the bottom left to match the image layout. */}
-        <div className="absolute inset-0 z-20 flex flex-col justify-end p-8 md:p-16">
+        <div className="relative md:absolute md:inset-0 z-20 flex flex-col justify-end p-6 md:p-16">
           <div className="flex flex-col sm:flex-row gap-4 max-w-xl">
             <a 
               href="#menu" 

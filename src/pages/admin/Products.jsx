@@ -16,6 +16,7 @@ const Products = () => {
     description: '',
     image: '',
     category: 'Cakes',
+    occasion: 'General / Any',
     isActive: true,
     isPerLb: false
   });
@@ -33,7 +34,10 @@ const Products = () => {
 
   const handleOpenModal = (product = null) => {
     if (product) {
-      setFormData(product);
+      setFormData({
+        ...product,
+        occasion: product.occasion || 'General / Any'
+      });
     } else {
       setFormData({
         id: null,
@@ -42,6 +46,7 @@ const Products = () => {
         description: '',
         image: '',
         category: 'Cakes',
+        occasion: 'General / Any',
         isActive: true,
         isPerLb: false
       });
@@ -203,6 +208,25 @@ const Products = () => {
                       <option value="Donuts">Donuts</option>
                       <option value="Cookies">Cookies</option>
                       <option value="Bread">Bread</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-on-surface">Occasion (Optional)</label>
+                    <select 
+                      value={formData.occasion || 'General / Any'} onChange={e => setFormData({...formData, occasion: e.target.value})}
+                      className="w-full px-3 py-2 rounded-lg border border-outline-variant bg-surface focus:ring-2 focus:ring-primary outline-none"
+                    >
+                      <option value="General / Any">General / Any</option>
+                      <option value="Birthdays">Birthdays</option>
+                      <option value="Weddings">Weddings</option>
+                      <option value="Engagement parties">Engagement parties</option>
+                      <option value="Anniversaries">Anniversaries</option>
+                      <option value="Baby showers">Baby showers</option>
+                      <option value="Job promotions">Job promotions</option>
+                      <option value="Passing an exam">Passing an exam</option>
+                      <option value="Completing a major project">Completing a major project</option>
+                      <option value="Opening a new business">Opening a new business</option>
+                      <option value="Buying a new home">Buying a new home</option>
                     </select>
                   </div>
                   <div>
