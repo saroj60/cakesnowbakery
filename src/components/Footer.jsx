@@ -50,14 +50,12 @@ const Footer = () => {
               <MapPin size={18} className="text-secondary mt-1 shrink-0" />
               <div>
                 <p className="font-body-sm text-on-surface-variant font-bold">Tikathali Branch</p>
-                <p className="font-body-sm text-on-surface-variant text-xs mt-1">Opposite to Ward Office, Lalitpur</p>
               </div>
             </div>
             <div className="flex items-start gap-3 mt-4">
               <MapPin size={18} className="text-secondary mt-1 shrink-0" />
               <div>
                 <p className="font-body-sm text-on-surface-variant font-bold">Balkot Branch</p>
-                <p className="font-body-sm text-on-surface-variant text-xs mt-1">Near Rose Village, Lalitpur</p>
               </div>
             </div>
           </div>
