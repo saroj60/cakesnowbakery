@@ -85,11 +85,10 @@ const Footer = () => {
               <MapPin size={12} /> Open in Google Maps
             </a>
             <a 
-              href="https://search.google.com/local/writereview?placeid=ChIJ8-UzjbgZ6zkRgYXcLW7Oln8" // Note: If this placeid doesn't work perfectly, the user can replace this href with their exact Google Business review link
+              href="https://www.google.com/maps/place/Cake+Snow+Bakery+%26+Coffee+Shop/@27.6672792,85.3154888,14z/data=!4m10!1m2!2m1!1scake+snow+bakery+%26+coffee+shop!3m6!1s0x39eb19b88d33e753:0x7f96ce6e2ddc3581!8m2!3d27.6672792!4d85.3535976!15sCh5jYWtlIHNub3cgYmFrZXJ5ICYgY29mZmVlIHNob3BaICIeY2FrZSBzbm93IGJha2VyeSAmIGNvZmZlZSBzaG9wkgEGYmFrZXJ5mgEjQ2haRFNVaE5NRzluUzBWSlEwRm5UVU5aTjI5aE1FZDNFQUXgAQD6AQQIABA_!16s%2Fg%2F11kj8wql10?entry=ttu&g_ep=EgoyMDI2MDUyNy4wIKXMDSoASAFQAw%3D%3D" 
               target="_blank" 
               rel="noreferrer"
               className="mt-1 w-full py-2 bg-white text-primary border border-primary/20 rounded-lg text-sm font-bold flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-colors shadow-sm"
-              title="If the link fails, replace the href in Footer.jsx with your Google My Business review link"
             >
               <Star size={16} className="text-yellow-500 fill-yellow-500" /> Rate us on Google
             </a>
