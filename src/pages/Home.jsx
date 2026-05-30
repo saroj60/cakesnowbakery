@@ -89,7 +89,8 @@ const Home = () => {
   const handleConfirmAddToCart = () => {
     if (!selectedCakeForCustomization) return;
     
-    const { weight, isEggless, message, flavor, shape } = customOptions;
+    const { isEggless, message, flavor, shape } = customOptions;
+    const weight = parseFloat(customOptions.weight) || 0;
     const isCustomDesign = selectedCakeForCustomization.isCustomDesign;
     const basePrice = typeof selectedCakeForCustomization.price === 'string' 
         ? parseFloat(selectedCakeForCustomization.price.replace(/,/g, '')) 
@@ -459,14 +460,14 @@ const Home = () => {
             
             <div className="p-6 space-y-6 overflow-y-auto max-h-[60vh]">
               <div>
-                <label className="block font-medium text-on-surface mb-2">Select Size / Weight (lbs)</label>
+                <label className="block font-medium text-on-surface mb-2">Select Pound (lbs)</label>
                 <input 
                   type="number" 
                   min="0.5" 
                   step="0.5"
                   placeholder="e.g., 1.5"
-                  value={customOptions.weight || ''}
-                  onChange={(e) => setCustomOptions(prev => ({ ...prev, weight: parseFloat(e.target.value) }))}
+                  value={customOptions.weight === '' ? '' : customOptions.weight}
+                  onChange={(e) => setCustomOptions(prev => ({ ...prev, weight: e.target.value === '' ? '' : parseFloat(e.target.value) }))}
                   className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary outline-none transition-all"
                 />
               </div>
