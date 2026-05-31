@@ -69,9 +69,7 @@ const AdminLogin = () => {
             {isLoading ? 'Authenticating...' : 'Sign In'}
           </button>
         </form>
-        <p className="text-center text-sm text-on-surface-variant mt-6">
-          Use cakesnowbakery.com / cakesnowbakery@@2026
-        </p>
+
       </div>
     </div>
   );
