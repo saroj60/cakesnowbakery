@@ -156,7 +156,7 @@ const Home = () => {
       {/* Static Hero Section */}
       <section className="relative w-full flex flex-col md:block md:h-[80vh] bg-[#1a110a] overflow-hidden">
         {/* Fallback for slow/broken hero image */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-gradient-to-br from-primary/90 to-[#1a110a] z-0">
+        <div className="absolute inset-0 hidden md:flex flex-col items-center justify-center text-center p-6 bg-gradient-to-br from-primary/90 to-[#1a110a] z-0">
           <h1 className="text-4xl md:text-6xl font-headline-lg font-bold text-white mb-4">Snow Cakes Bakery</h1>
           <p className="text-xl md:text-2xl text-white/90">The best bakery in Kathmandu for custom cakes & pastries.</p>
         </div>
@@ -169,18 +169,18 @@ const Home = () => {
           />
         </div>
         
-        <div className="relative md:absolute md:inset-0 z-20 flex flex-col justify-end p-6 md:p-16">
+        <div className="relative md:absolute md:inset-0 z-20 flex flex-col justify-end p-4 md:p-16">
           <div className="flex flex-col sm:flex-row gap-4 max-w-xl">
             <a 
               href="#menu" 
-              className="px-8 py-4 bg-primary text-white font-bold rounded-full text-lg hover:bg-primary/90 transition-all shadow-[0_10px_25px_rgba(68,42,34,0.3)] hover:scale-105 hover:-translate-y-1 active:scale-95 flex items-center gap-2 justify-center"
+              className="px-6 py-3 md:px-8 md:py-4 bg-primary text-white font-bold rounded-full text-base md:text-lg hover:bg-primary/90 transition-all shadow-[0_10px_25px_rgba(68,42,34,0.3)] hover:scale-105 hover:-translate-y-1 active:scale-95 flex items-center gap-2 justify-center"
             >
               Explore Cakes
               <ArrowRight size={20} />
             </a>
             <Link 
               to="/custom-order"
-              className="px-8 py-4 bg-white text-primary font-bold rounded-full text-lg hover:bg-gray-100 transition-all shadow-[0_10px_25px_rgba(0,0,0,0.1)] hover:scale-105 hover:-translate-y-1 active:scale-95 flex items-center gap-2 justify-center"
+              className="px-6 py-3 md:px-8 md:py-4 bg-white text-primary font-bold rounded-full text-base md:text-lg hover:bg-gray-100 transition-all shadow-[0_10px_25px_rgba(0,0,0,0.1)] hover:scale-105 hover:-translate-y-1 active:scale-95 flex items-center gap-2 justify-center"
             >
               Customize Cake
               <Sparkles size={20} />
@@ -189,10 +189,10 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="py-16 px-margin-mobile bg-surface">
+      <section className="py-12 md:py-16 px-margin-mobile bg-surface">
         <div className="max-w-container-max mx-auto text-center">
           <span className="font-label-lg text-label-lg text-primary uppercase tracking-[0.2em] mb-4 block">Our Commitment</span>
-          <h2 className="font-headline-lg text-3xl md:text-4xl text-primary mb-6">Welcome to the best bakery in Kathmandu.</h2>
+          <h2 className="font-headline-lg text-2xl md:text-4xl text-primary mb-6">Welcome to the best bakery in Kathmandu.</h2>
           <p className="font-body-lg text-lg text-on-surface-variant max-w-3xl mx-auto leading-relaxed">
             Whether you are looking for the perfect <strong>birthday cake in Kathmandu</strong> or a stunning <strong>wedding cake in Nepal</strong>, our artisan bakers handcraft every order with premium ingredients. 
             Want something unique? Order a <strong>custom cake in Kathmandu</strong> tailored to your celebration. We also proudly serve as a premier <strong>donut shop in Kathmandu</strong>, and offer specialty dietary options including <strong>gluten free cake in Kathmandu</strong> and <strong>vegan cake in Kathmandu</strong>!
