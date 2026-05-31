@@ -47,6 +47,7 @@ const Home = () => {
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('q') || '';
   const [cakes, setCakes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { addToCart } = useCart();
   const [selectedShowcaseIndex, setSelectedShowcaseIndex] = useState(0);
   const [activeFilter, setActiveFilter] = useState('All');
@@ -63,6 +64,7 @@ const Home = () => {
   const filters = ['All', 'Birthdays', 'Weddings', 'Engagement parties', 'Anniversaries', 'Baby showers', 'Job promotions', 'Passing an exam', 'Completing a major project', 'Opening a new business', 'Buying a new home'];
 
   useEffect(() => {
+    setIsLoading(true);
     getProducts().then(products => {
       const activeProducts = products.filter(p => p.isActive !== false);
       const mockTags = ['Birthdays', 'Weddings', 'Anniversaries'];
@@ -71,7 +73,8 @@ const Home = () => {
         ...p,
         tags: p.tags && p.tags.length > 0 && p.tags[0] ? p.tags : [mockTags[Math.floor(Math.random() * mockTags.length)]]
       })));
-    });
+      setIsLoading(false);
+    }).catch(() => setIsLoading(false));
   }, []);
 
   useEffect(() => {
@@ -310,9 +313,14 @@ const Home = () => {
               </button>
             </div>
           ))}
-          {filteredCakes.length === 0 && (
+          {filteredCakes.length === 0 && !isLoading && (
             <div className="col-span-full text-center py-10">
               <p className="text-on-surface-variant text-lg">No cakes available matching these filters.</p>
+            </div>
+          )}
+          {isLoading && (
+            <div className="col-span-full text-center py-10">
+              <p className="text-on-surface-variant text-lg animate-pulse">Loading cake...</p>
             </div>
           )}
         </div>
