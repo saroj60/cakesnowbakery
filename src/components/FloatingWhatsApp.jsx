@@ -18,7 +18,7 @@ const FloatingWhatsApp = () => {
     >
       <MessageCircle size={32} />
       <span className="absolute right-full mr-4 bg-surface text-on-surface px-4 py-2 rounded-xl text-sm font-medium shadow-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-        Chat with us!
+        Chat with us! (Usually replies in 1 hour)
       </span>
     </button>
   );

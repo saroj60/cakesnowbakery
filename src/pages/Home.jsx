@@ -46,6 +46,7 @@ const SHOWCASE_CAKES = [
 const Home = () => {
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get('q') || '';
+  const categoryQuery = searchParams.get('category');
   const [cakes, setCakes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { addToCart } = useCart();
@@ -128,6 +129,7 @@ const Home = () => {
 
   const filteredCakes = cakes.filter(cake => {
     if (cake.category === 'Decorations') return false;
+    const matchesCategory = !categoryQuery || cake.category === categoryQuery;
     const matchesFilter = activeFilter === 'All' || (cake.tags && cake.tags.includes(activeFilter));
     const cakePrice = parseFloat(String(cake.price).replace(/,/g, '')) || 0;
     const matchesPrice = cakePrice <= priceRange;
@@ -135,7 +137,7 @@ const Home = () => {
       cake.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
       (cake.description && cake.description.toLowerCase().includes(searchQuery.toLowerCase()));
       
-    return matchesFilter && matchesPrice && matchesSearch;
+    return matchesCategory && matchesFilter && matchesPrice && matchesSearch;
   });
 
   const filteredDecorations = cakes.filter(cake => {
@@ -153,10 +155,16 @@ const Home = () => {
     <main className="pt-24">
       {/* Static Hero Section */}
       <section className="relative w-full flex flex-col md:block md:h-[80vh] bg-[#1a110a] overflow-hidden">
-        <div className="w-full md:absolute md:inset-0">
+        {/* Fallback for slow/broken hero image */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 bg-gradient-to-br from-primary/90 to-[#1a110a] z-0">
+          <h1 className="text-4xl md:text-6xl font-headline-lg font-bold text-white mb-4">Snow Cakes Bakery</h1>
+          <p className="text-xl md:text-2xl text-white/90">Fresh Cakes & Pastries in Kathmandu</p>
+        </div>
+        
+        <div className="w-full md:absolute md:inset-0 z-10">
           <img 
             src="/hero.png" 
-            alt="Snow Cakes Hero" 
+            alt="Snow Cakes Bakery - Freshly baked cakes and pastries" 
             className="w-full h-auto md:h-full object-cover object-top" 
           />
         </div>

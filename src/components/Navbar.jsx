@@ -64,12 +64,12 @@ const Navbar = () => {
                 </button>
                 <div className={`absolute top-full left-0 w-48 bg-surface rounded-xl shadow-lg border border-outline-variant/20 overflow-hidden transition-all duration-200 origin-top ${isCategoriesOpen ? 'opacity-100 scale-y-100 visible' : 'opacity-0 scale-y-0 invisible'}`}>
                   <div className="py-2 flex flex-col">
-                    <a href="/#menu" className="px-4 py-2 hover:bg-surface-container-low transition-colors">Cakes</a>
-                    <a href="/#menu" className="px-4 py-2 hover:bg-surface-container-low transition-colors">Pastries</a>
-                    <a href="/#menu" className="px-4 py-2 hover:bg-surface-container-low transition-colors">Donuts</a>
-                    <a href="/#menu" className="px-4 py-2 hover:bg-surface-container-low transition-colors">Cookies</a>
-                    <a href="/#menu" className="px-4 py-2 hover:bg-surface-container-low transition-colors">Bread</a>
-                    <a href="/#menu" className="px-4 py-2 hover:bg-surface-container-low transition-colors">Coffee</a>
+                    <Link to="/?category=Cakes#menu" onClick={() => setIsCategoriesOpen(false)} className="px-4 py-2 hover:bg-surface-container-low transition-colors">Cakes</Link>
+                    <Link to="/?category=Pastries#menu" onClick={() => setIsCategoriesOpen(false)} className="px-4 py-2 hover:bg-surface-container-low transition-colors">Pastries</Link>
+                    <Link to="/?category=Donuts#menu" onClick={() => setIsCategoriesOpen(false)} className="px-4 py-2 hover:bg-surface-container-low transition-colors">Donuts</Link>
+                    <Link to="/?category=Cookies#menu" onClick={() => setIsCategoriesOpen(false)} className="px-4 py-2 hover:bg-surface-container-low transition-colors">Cookies</Link>
+                    <Link to="/?category=Bread#menu" onClick={() => setIsCategoriesOpen(false)} className="px-4 py-2 hover:bg-surface-container-low transition-colors">Bread</Link>
+                    <Link to="/?category=Coffee#menu" onClick={() => setIsCategoriesOpen(false)} className="px-4 py-2 hover:bg-surface-container-low transition-colors">Coffee</Link>
                   </div>
                 </div>
               </div>
@@ -151,12 +151,12 @@ const Navbar = () => {
             <div className="py-2 border-b border-outline-variant/10">
               <span className="font-medium text-lg text-primary block mb-2">Categories</span>
               <div className="grid grid-cols-2 gap-2 pl-4">
-                <a href="/#menu" onClick={toggleMobileMenu} className="py-1 text-on-surface-variant">Cakes</a>
-                <a href="/#menu" onClick={toggleMobileMenu} className="py-1 text-on-surface-variant">Pastries</a>
-                <a href="/#menu" onClick={toggleMobileMenu} className="py-1 text-on-surface-variant">Donuts</a>
-                <a href="/#menu" onClick={toggleMobileMenu} className="py-1 text-on-surface-variant">Cookies</a>
-                <a href="/#menu" onClick={toggleMobileMenu} className="py-1 text-on-surface-variant">Bread</a>
-                <a href="/#menu" onClick={toggleMobileMenu} className="py-1 text-on-surface-variant">Coffee</a>
+                <Link to="/?category=Cakes#menu" onClick={toggleMobileMenu} className="py-1 text-on-surface-variant">Cakes</Link>
+                <Link to="/?category=Pastries#menu" onClick={toggleMobileMenu} className="py-1 text-on-surface-variant">Pastries</Link>
+                <Link to="/?category=Donuts#menu" onClick={toggleMobileMenu} className="py-1 text-on-surface-variant">Donuts</Link>
+                <Link to="/?category=Cookies#menu" onClick={toggleMobileMenu} className="py-1 text-on-surface-variant">Cookies</Link>
+                <Link to="/?category=Bread#menu" onClick={toggleMobileMenu} className="py-1 text-on-surface-variant">Bread</Link>
+                <Link to="/?category=Coffee#menu" onClick={toggleMobileMenu} className="py-1 text-on-surface-variant">Coffee</Link>
               </div>
             </div>
 

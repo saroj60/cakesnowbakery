@@ -47,12 +47,14 @@ const Footer = () => {
               <MapPin size={18} className="text-secondary mt-1 shrink-0" />
               <div>
                 <p className="font-body-sm text-on-surface-variant font-bold">Tikathali Branch</p>
+                <p className="font-body-sm text-on-surface-variant/80 text-xs mt-0.5">Tikathali-5, Mahalaxmi<br/>Lalitpur, Nepal</p>
               </div>
             </div>
             <div className="flex items-start gap-3 mt-4">
               <MapPin size={18} className="text-secondary mt-1 shrink-0" />
               <div>
                 <p className="font-body-sm text-on-surface-variant font-bold">Balkot Branch</p>
+                <p className="font-body-sm text-on-surface-variant/80 text-xs mt-0.5">Balkot Chowk<br/>Bhaktapur, Nepal</p>
               </div>
             </div>
           </div>
@@ -93,8 +95,14 @@ const Footer = () => {
         </div>
 
       </div>
-      <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mt-12 pt-8 border-t border-outline-variant/10 text-center">
-        <p className="font-body-sm text-body-sm text-on-surface-variant opacity-70">© {new Date().getFullYear()} Snow Cakes Bakery. Handcrafted with love in Nepal.</p>
+      <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mt-12 pt-8 border-t border-outline-variant/10">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="font-body-sm text-body-sm text-on-surface-variant opacity-70">© {new Date().getFullYear()} Snow Cakes Bakery. Handcrafted with love in Nepal.</p>
+          <div className="flex items-center gap-6 text-sm text-on-surface-variant font-medium">
+            <a href="#" className="hover:text-primary transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-primary transition-colors">Terms & Conditions</a>
+          </div>
+        </div>
       </div>
     </footer>
   );
