@@ -110,7 +110,9 @@ const CartDrawer = () => {
         id: item.id,
         name: item.name,
         price: item.price,
-        quantity: item.quantity
+        quantity: item.quantity,
+        image: item.image,
+        messageOnCake: item.messageOnCake
       })),
       total: getCartTotal()
     };

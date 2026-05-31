@@ -24,28 +24,21 @@ const defaultCakes = [
   }
 ];
 
+let memoryCakes = [...defaultCakes];
+
 export const getCakes = () => {
-  const data = localStorage.getItem(STORAGE_KEY);
-  if (!data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultCakes));
-    return defaultCakes;
-  }
-  return JSON.parse(data);
+  return [...memoryCakes];
 };
 
 export const addCake = (cake) => {
-  const cakes = getCakes();
   const newCake = {
     ...cake,
     id: Date.now().toString()
   };
-  cakes.push(newCake);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(cakes));
+  memoryCakes.push(newCake);
   return newCake;
 };
 
 export const deleteCake = (id) => {
-  let cakes = getCakes();
-  cakes = cakes.filter(c => c.id !== id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(cakes));
+  memoryCakes = memoryCakes.filter(c => c.id !== id);
 };

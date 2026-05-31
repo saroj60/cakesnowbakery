@@ -133,9 +133,23 @@ const Orders = () => {
                   <h4 className="text-sm font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Items</h4>
                   <ul className="space-y-1">
                     {order.items.map((item, idx) => (
-                      <li key={idx} className="text-sm flex justify-between">
-                        <span><span className="font-medium">{item.quantity}x</span> {item.name}</span>
-                        <span className="text-on-surface-variant">Rs. {(item.price * item.quantity).toFixed(2)}</span>
+                      <li key={idx} className="text-sm flex flex-col gap-1 pb-2 border-b border-outline-variant/10 last:border-0 last:pb-0">
+                        <div className="flex justify-between items-start">
+                          <div className="flex gap-2 items-start">
+                            {item.image ? (
+                              <img src={item.image} alt={item.name} className="w-10 h-10 object-cover rounded bg-surface-variant flex-shrink-0" />
+                            ) : (
+                              <div className="w-10 h-10 bg-surface-variant rounded flex-shrink-0"></div>
+                            )}
+                            <div className="flex flex-col">
+                              <span><span className="font-medium">{item.quantity}x</span> {item.name}</span>
+                              {item.messageOnCake && (
+                                <span className="text-xs italic text-on-surface-variant mt-0.5">Msg: "{item.messageOnCake}"</span>
+                              )}
+                            </div>
+                          </div>
+                          <span className="text-on-surface-variant mt-1">Rs. {(item.price * item.quantity).toFixed(2)}</span>
+                        </div>
                       </li>
                     ))}
                   </ul>
